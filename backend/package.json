@@ -1,0 +1,59 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "fucinema",
+  "scripts": {
+    "clear": "rm -rf $(find ./src -name 'dist') && rm -rf $(find ./src -name '*.tsbuildinfo') && rm -rf ./dist",
+    "build:cli": "cd ./src/cli && npm run build",
+    "start:cli": "cd ./src/cli && npm start",
+    "start:cli:dev": "cd ./src/cli && npm run start:dev",
+    "build:rest": "cd ./src/rest && npm run build",
+    "start:rest": "cd ./src/rest && npm start",
+    "start:rest:dev": "cd ./src/rest && npm run start:dev",
+    "test": "jest -c ./jest.config.js",
+    "test:cov": "jest -c ./jest.config.js --coverage",
+    "test:integration": "jest -c ./jest.config.js ./src/tests/integration/ --runInBand",
+    "test:unit": "jest -c ./jest.config.js ./src/tests/unit/ --runInBand"
+  },
+  "author": "Narandaev Damir",
+  "license": "ISC",
+  "dependencies": {
+    "@nestjs/common": "^8.0.0",
+    "@nestjs/core": "^8.0.0",
+    "@nestjs/microservices": "^8.0.0",
+    "@nestjs/typeorm": "^8.1.2",
+    "js-yaml": "^4.1.0",
+    "pino": "^8.11.0",
+    "pino-pretty": "^10.0.0",
+    "typeorm": "^0.3.7"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "babel-jest": "^28.0.0",
+    "concurrently": "^8.0.1",
+    "jest": "^28.1.3",
+    "nodemon": "^2.0.22",
+    "rimraf": "^4.4.1",
+    "ts-jest": "^28.0.8",
+    "tsc-watch": "^6.0.0",
+    "tsconfig-paths": "^4.1.0",
+    "typescript": "^4.7.4"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "tsconfig.json"
+      }
+    },
+    "rootDir": "src",
+    "moduleNameMapper": {
+      "@/(.*)": "<rootDir>/$1",
+      "^@libs/database(|/.*)$": "<rootDir>/external/libs/database/src/$1"
+    },
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node"
+  }
+}

@@ -1,0 +1,1 @@
+export const ERROR_SERVICE = 'ERROR_SERVICE';
