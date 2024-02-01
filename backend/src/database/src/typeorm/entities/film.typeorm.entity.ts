@@ -26,9 +26,15 @@ export class FilmTypeormEntity {
 
   @ManyToOne(() => CompanyTypeormEntity, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   company?: CompanyTypeormEntity;
+
+  @Column({
+    nullable: true,
+  })
+  companyUuid?: string;
 
   @ManyToMany(() => ActorTypeormEntity, a => a.films, {
     cascade: true

@@ -8,3 +8,6 @@ export * from './base.exception';
 export * from './database-connection-refused.exception';
 export * from './invalid-input-data.exception';
 export * from './unknown.exception';
+export * from './film-already-has-actor.exception';
+export * from './backend-hasnt-permissions.exception';
+export * from './database-is-readonly.exception';

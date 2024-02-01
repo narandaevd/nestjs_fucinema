@@ -33,7 +33,9 @@ export class ActorTypeormEntity {
   })
   country?: string;
 
-  @ManyToMany(() => FilmTypeormEntity, f => f.actors)
+  @ManyToMany(() => FilmTypeormEntity, f => f.actors, {
+    onDelete: 'CASCADE'
+  })
   @JoinTable()
   films?: FilmTypeormEntity[];
 } 

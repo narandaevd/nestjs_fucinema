@@ -67,3 +67,21 @@
 #### Формализация бизнес-правил
 
 ![br](/docs/diagrams/diagram.svg)
+
+# Экраны приложения
+
+## Главная страница
+
+![](/docs/images/page.png)
+
+## Личная страница фильма
+
+![](/docs/images/main.png)
+
+## Форма изменения описания фильма
+
+![](/docs/images/descr.png)
+
+## Форма регистрации
+
+![](/docs/images/register.png)

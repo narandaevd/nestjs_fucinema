@@ -22,6 +22,7 @@ function MovieList({films, presenter, totalCount}: {
 
   const PAGE_SIZE = 3;
   useEffect(() => {
+    console.log(filterFilmsAction(0, PAGE_SIZE));
     presenter(filterFilmsAction(0, PAGE_SIZE));
   }, []);
 

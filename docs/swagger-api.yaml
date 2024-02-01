@@ -1,0 +1,417 @@
+openapi: 3.0.3
+info:
+  title: Fucinema
+  description: |-
+    Идея проекта - создание сайта, который будет предоставлять информацию о фильмах. Для пользователей будет предоставляться возможность добавления отзывов.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+
+paths:
+  /reports:
+    post:
+      tags:
+        - reports
+      parameters:
+        - in: header
+          name: Authentication
+          required: true
+          schema:
+            type: string
+            example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2OTYxODMyNTIsImV4cCI6MTY5NjE4MzI1NiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.vJjQEwtho2PKCLTnx6ZBhFERWnlOL3Ee788ODdlo4V4
+      summary: Добавить(изменить) отзыв
+      requestBody:
+        description: Изменение или добавление отзыва. Операция зависит от наличия отзыва от пользователя к фильму.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutReportRestDto'
+        required: true
+      responses:
+        '201':
+          description: Отзыв был оставлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PutReportRestDto'
+        '521':
+          description: Сервис временно не работает, попробуйте позднее
+        '403':
+          description: Пользователь не авторизован
+        '400':
+          description: Неверные входные данные
+
+  /rating:
+    get:
+      tags:
+        - rating
+      summary: Получение отзыва по содержанию
+      parameters:
+      - in: query
+        name: content
+        required: true
+        schema:
+          type: string
+          example: somecontent
+      - in: query
+        name: plotRate
+        schema:
+          type: number
+          example: 3
+      - in: query
+        name: actorPlayRate
+        schema:
+          type: number
+          example: 4
+      responses:
+        '521':
+          description: Сервис временно не работает, попробуйте позднее
+        '200':
+          description: Содержание было оценено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rating:
+                    type: number
+                    example: 3
+                  maxRating:
+                    type: number
+                    example: 10
+                  checkResults:
+                    type: array
+                    items:
+                      type: object
+                      properties: 
+                        code:
+                          type: string
+                          enum: [success, failure]
+                        givingScores:
+                          type: number
+                          example: 15
+                        failureMessage:
+                          type: string
+                          example: Недостаточная длина текста
+        '400': 
+          description: Неверные входные данные
+
+  /films:
+    get:
+      tags:
+        - films
+      parameters:
+        - in: query
+          name: title
+          schema:
+            type: string
+            example: 'sometitle'
+        - in: query
+          name: description
+          schema:
+            type: string
+            example: 'description'
+        - in: query
+          name: page
+          schema:
+            type: number
+            example: 1
+            default: 0
+        - in: query
+          name: size
+          schema:
+            type: number
+            example: 10
+            default: 10
+      summary: Получение списка фильмов
+      responses:
+        '521':
+          description: Сервис временно не работает, попробуйте позднее
+        '200':
+          description: Фильмы были получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmPagination'
+  
+  /films/{uuid}:
+    get:
+      tags:
+        - films
+      parameters:
+        - in: path
+          required: true
+          name: uuid
+          schema:
+            type: string
+            example: '00d411be-ee48-4c78-8ab5-1140580285b9'
+      summary: Получение подробной информации о фильме
+      responses:
+        '521':
+          description: Сервис временно не работает, попробуйте позднее
+        '200':
+          description: Подробная информация о фильме получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmDetails'
+        '404':
+          description: Нет такого фильма
+    patch:
+      tags:
+        - films
+      parameters:
+        - in: header
+          name: Authentication
+          required: true
+          schema:
+            type: string
+            example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2OTYxODMyNTIsImV4cCI6MTY5NjE4MzI1NiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.vJjQEwtho2PKCLTnx6ZBhFERWnlOL3Ee788ODdlo4V4
+        - in: path
+          required: true
+          name: uuid
+          schema:
+            type: string
+            example: '00d411be-ee48-4c78-8ab5-1140580285b9'
+      summary: Изменение информации о фильме
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFilmRestDto'
+      responses:
+        '521':
+          description: Сервис временно не работает, попробуйте позднее
+        '200':
+          description: Фильм был успешно изменён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilmForPagination'
+        '403':
+          description: Пользователь не авторизован
+        '404':
+          description: Нет такого фильма
+
+  /users/auth:
+    post:
+      tags:
+        - users
+      summary: Авторизация пользователя
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  example: 'somelogin'
+                password:
+                  type: string
+                  example: 'somepassword'
+      responses:
+        '521':
+          description: Сервис временно не работает, попробуйте позднее
+        '200':
+          description: Авторизация прошла успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expiresIn:
+                    type: number
+                    example: 123123113
+                  accessToken:
+                    type: string
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2OTYxODMyNTIsImV4cCI6MTY5NjE4MzI1NiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.vJjQEwtho2PKCLTnx6ZBhFERWnlOL3Ee788ODdlo4V4
+        '400':
+          description: Неверные данные
+        '401':
+          description: Логин или пароль неверны
+
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Регистрация пользователя
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  example: 'somelogin'
+                password:
+                  type: string
+                  example: 'somepassword'
+      responses:
+        '521':
+          description: Сервис временно не работает, попробуйте позднее
+        '200':
+          description: Регистрация прошла успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  login: 
+                    type: string
+                    example: somelogin
+                  expiresIn:
+                    type: number
+                    example: 123123113
+                  accessToken:
+                    type: string
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2OTYxODMyNTIsImV4cCI6MTY5NjE4MzI1NiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.vJjQEwtho2PKCLTnx6ZBhFERWnlOL3Ee788ODdlo4V4
+        '400':
+          description: Неверные данные
+        '401':
+          description: Логин уже занят
+
+components:
+  schemas:
+
+    UserForFilm:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: e37f1303-96f5-4f9e-9777-87890058bac0
+        login:
+          type: string
+          example: asdad
+
+    ActorForFilm:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: e37f1303-96f5-4f9e-9777-87890058bac0
+        firstName:
+          type: string
+          example: 'somefirstName'
+        middleName:
+          type: string
+          example: 'somemiddleName'
+        lastName:
+          type: string
+          example: 'somelastName'
+        country:
+          type: string
+          example: 'somecountry'
+          
+    ReportForFilm:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: e37f1303-96f5-4f9e-9777-87890058bac0
+        filmUuid:
+          type: string
+          example: e37f1303-96f5-4f9e-9777-87890058bac0
+        userUuid:
+          type: string
+          example: e37f1303-96f5-4f9e-9777-87890058bac0
+        rating:
+          type: number
+        user:
+          $ref: '#/components/schemas/UserForFilm'
+        plotRate: 
+          type: number
+        actorPlayRate:
+          type: number
+
+    CompanyForFilm:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: e37f1303-96f5-4f9e-9777-87890058bac0
+        title:
+          type: string
+          example: 'sometitle'
+        country:
+          type: string
+          example: 'somecountry'
+
+    FilmDetails:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: 'e37f1303-96f5-4f9e-9777-87890058bac0'
+        description:
+          type: string
+          example: 'somedescription'
+        title:
+          type: string
+          example: 'sometitle'
+        company:
+          $ref: '#/components/schemas/CompanyForFilm'
+        actors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActorForFilm'
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportForFilm'
+
+    FilmPagination:
+      type: object
+      properties:
+        totalCount: 
+          type: number
+          example: 123
+        films:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilmForPagination'
+
+    FilmForPagination:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: 'e37f1303-96f5-4f9e-9777-87890058bac0'
+        description:
+          type: string
+          example: 'somedescription'
+        title:
+          type: string
+          example: 'sometitle'
+
+    PutReportRestDto:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          example: 'Awesome film'
+        uuid:
+          type: string
+          example: "e37f1303-96f5-4f9e-9777-87890058bac0"
+        userUuid:
+          type: string
+          example: "00d411be-ee48-4c78-8ab5-1140580285b9"
+        filmUuid:
+          type: string
+          example: "9231a4f8-377c-4ae4-917e-ab056405ea7a"
+        plotRate:
+          type: integer
+          example: 3
+        actorPlayRate:
+          type: integer
+          example: 3
+
+    UpdateFilmRestDto:
+      type: object
+      required: [description]
+      properties:
+        description:
+          type: string
+          example: 'somedescription'

@@ -9,7 +9,8 @@ export class UserTypeormEntityMapper implements IEntityMapper<User, UserTypeormE
     const userEntity = Object.assign(
       new UserTypeormEntity(),
       model
-    )
+    );
+    userEntity.roles = model.roles;
     return userEntity;
   }
   toModel(entity: UserTypeormEntity): User {
@@ -19,6 +20,7 @@ export class UserTypeormEntityMapper implements IEntityMapper<User, UserTypeormE
       new User(entity.login, entity.password),
       entity
     )
+    model.roles = entity.roles;
     return model;
   }
 }

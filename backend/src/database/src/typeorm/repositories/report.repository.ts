@@ -10,8 +10,10 @@ import { ReportTypeormEntityMapper } from '../mappers/report.mapper';
 import { ReportTypeormEntity } from '../entities/report.typeorm.entity';
 import {InjectRepository} from "@nestjs/typeorm";
 import { QueryFailedError, Repository } from 'typeorm';
-import {CONNECTION_RESOLVER, FOREIGN_KEY_VIOLATE_ERRCODE} from "../consts";
+import {ACL_ERROR_RESOLVER, CONNECTION_RESOLVER} from "../consts";
 import {IConnectionRefusedResolver} from "../interfaces/connection-refused-resolver.interface";
+import { PostgresError } from "pg-error-enum";
+import { IAclCheckErrorResolver } from "../interfaces/acl-check-error-resolver.interface";
 
 @Injectable()
 export class ReportTypeormRepository implements IReportRepository {
@@ -21,6 +23,8 @@ export class ReportTypeormRepository implements IReportRepository {
     private readonly rawReportTypeormRepository: Repository<ReportTypeormEntity>,
     @Inject(CONNECTION_RESOLVER)
     private readonly resolver: IConnectionRefusedResolver,
+    @Inject(ACL_ERROR_RESOLVER)
+    private readonly aclErrorResolver: IAclCheckErrorResolver,
   ) {}
 
   async findOneByUserAndFilm(userUuid: string, filmUuid: string): Promise<Report> {
@@ -45,7 +49,8 @@ export class ReportTypeormRepository implements IReportRepository {
       return mapper.toModel(savedReportEntity);
     } catch (e: unknown) {
       this.resolver.throwIfConnectionRefused(e);
-      if (e instanceof QueryFailedError && (e as any).code === FOREIGN_KEY_VIOLATE_ERRCODE)
+      this.aclErrorResolver.assertThatHasPermissions(e);
+      if (e instanceof QueryFailedError && (e as any).code === PostgresError.FOREIGN_KEY_VIOLATION)
         throw new NotFoundException('Нет фильма с таким uuid');
       throw new UnknownException(e);
     }
@@ -74,8 +79,9 @@ export class ReportTypeormRepository implements IReportRepository {
         });
       return mapper.toModel(updatedReportEntity);
     } catch (e: unknown) {
+      this.aclErrorResolver.assertThatHasPermissions(e);
       this.resolver.throwIfConnectionRefused(e);
-      if (e instanceof QueryFailedError && (e as any).code === FOREIGN_KEY_VIOLATE_ERRCODE)
+      if (e instanceof QueryFailedError && (e as any).code === PostgresError.FOREIGN_KEY_VIOLATION)
         throw new NotFoundException('Нет фильма с таким uuid');
       throw new UnknownException(e);
     }

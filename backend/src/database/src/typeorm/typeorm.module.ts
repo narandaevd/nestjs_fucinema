@@ -4,7 +4,11 @@ import {
   FILM_REPOSITORY_TOKEN,
   IFilmRepository,
   IReportRepository,
-  REPORT_REPOSITORY_TOKEN
+  REPORT_REPOSITORY_TOKEN,
+  COMPANY_REPOSITORY_TOKEN,
+  ACTOR_REPOSITORY_TOKEN,
+  IActorRepository,
+  ICompanyRepository
 } from "../../../repository-contracts";
 
 import {DynamicModule, Module, Provider} from "@nestjs/common";
@@ -19,7 +23,10 @@ import {IDatabaseModuleFactory} from "../interfaces";
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {ConnectionRefusedResolver} from "./services/connection-refused-resolver";
 import {IConnectionRefusedResolver} from "./interfaces/connection-refused-resolver.interface";
-import {CONNECTION_RESOLVER} from "./consts";
+import {ACL_ERROR_RESOLVER, CONNECTION_RESOLVER} from "./consts";
+import { ActorTypeormRepository, CompanyTypeormRepository } from "./repositories";
+import { IAclCheckErrorResolver } from "./interfaces/acl-check-error-resolver.interface";
+import { AclCheckErrorResolver } from "./services/acl-check-error-resolver";
 
 const filmTypeormRepositoryProvider: Provider<IFilmRepository> = {
   provide: FILM_REPOSITORY_TOKEN,
@@ -37,6 +44,18 @@ const connectionRefusedResolverProvider: Provider<IConnectionRefusedResolver> = 
   provide: CONNECTION_RESOLVER,
   useClass: ConnectionRefusedResolver,
 }
+const AclCheckErrorResolverProvider: Provider<IAclCheckErrorResolver> = {
+  provide: ACL_ERROR_RESOLVER,
+  useClass: AclCheckErrorResolver,
+}
+const actorTypeormRepositoryProvider: Provider<IActorRepository> = {
+  provide: ACTOR_REPOSITORY_TOKEN,
+  useClass: ActorTypeormRepository,
+}
+const companyTypeormRepositoryProvider: Provider<ICompanyRepository> = {
+  provide: COMPANY_REPOSITORY_TOKEN,
+  useClass: CompanyTypeormRepository,
+}
 
 export class TypeormConfigFactory {
   static create(config: DatabaseConfig): DataSourceOptions {
@@ -47,7 +66,7 @@ export class TypeormConfigFactory {
       database: config.database,
       host: config.host,
       port: config.port,
-      synchronize: false,
+      synchronize: true,
       entities: [...entities],
     }
   }
@@ -66,11 +85,16 @@ export class TypeormModuleFactory implements IDatabaseModuleFactory {
         filmTypeormRepositoryProvider,
         reportTypeormRepositoryProvider,
         userTypeormRepositoryProvider,
+        AclCheckErrorResolverProvider,
+        actorTypeormRepositoryProvider,
+        companyTypeormRepositoryProvider,
       ],
       exports: [
         FILM_REPOSITORY_TOKEN,
         REPORT_REPOSITORY_TOKEN,
         USER_REPOSITORY_TOKEN,
+        COMPANY_REPOSITORY_TOKEN,
+        ACTOR_REPOSITORY_TOKEN,
       ],
     }
   }

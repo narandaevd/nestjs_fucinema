@@ -1,0 +1,1 @@
+CREATE ROLE repl_user WITH LOGIN SUPERUSER PASSWORD 'repl_password';

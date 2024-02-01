@@ -6,9 +6,10 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import { UserTypeormEntity } from '../entities/user.typeorm.entity';
 import {UserTypeormEntityMapper} from "../mappers/user.mapper";
-import {CONNECTION_RESOLVER} from "../consts";
+import {ACL_ERROR_RESOLVER, CONNECTION_RESOLVER} from "../consts";
 import {IConnectionRefusedResolver} from "../interfaces/connection-refused-resolver.interface";
 import {UnknownException} from "../../../../exceptions";
+import { IAclCheckErrorResolver } from "../interfaces/acl-check-error-resolver.interface";
 
 @Injectable()
 export class UserTypeormRepository implements IUserRepository {
@@ -17,6 +18,8 @@ export class UserTypeormRepository implements IUserRepository {
     private readonly rawUserTypeormRepository: Repository<UserTypeormEntity>,
     @Inject(CONNECTION_RESOLVER)
     private readonly resolver: IConnectionRefusedResolver,
+    @Inject(ACL_ERROR_RESOLVER)
+    private readonly aclErrorResolver: IAclCheckErrorResolver,
   ) {}
 
   async save(user: User): Promise<User> {
@@ -28,6 +31,7 @@ export class UserTypeormRepository implements IUserRepository {
         .save(entity);
       return mapper.toModel(savedUser);
     } catch (e: unknown) {
+      this.aclErrorResolver.assertThatHasPermissions(e);
       this.resolver.throwIfConnectionRefused(e);
       throw new UnknownException(e);
     }

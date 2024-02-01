@@ -1,4 +1,5 @@
 import {Column, Entity, PrimaryColumn} from "typeorm";
+import { Role } from "../../../../domain";
 
 @Entity({name: 'user'})
 export class UserTypeormEntity {
@@ -18,4 +19,10 @@ export class UserTypeormEntity {
     type: 'text',
   })
   password: string;
+
+  @Column({
+    type: 'jsonb',
+    default: '[]',
+  })
+  roles: Role[];
 }

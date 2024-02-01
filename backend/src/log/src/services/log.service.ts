@@ -24,22 +24,22 @@ export class PinoLogService implements ILogService {
   pino: Logger;
 
   async fatal(objOrErr: unknown, content?: string|string[]): Promise<void> {
-    this.pino.fatal(new Log(objOrErr, content));
+    // this.pino.fatal(new Log(objOrErr, content));
   }
 
   async warning(objOrErr: unknown, content?: string | string[]): Promise<void> {
-    this.pino.warn(new Log(objOrErr, content));
+    // this.pino.warn(new Log(objOrErr, content));
   }
 
   async debug(objOrErr: unknown, content?: string | string[]): Promise<void> {
-    this.pino.debug(new Log(objOrErr, content));
+    // this.pino.debug(new Log(objOrErr, content));
   }
 
   async info(objOrErr: unknown, content?: string | string[]): Promise<void> {
-    this.pino.info(new Log(objOrErr, content));
+    // this.pino.info(new Log(objOrErr, content));
   }
 
   async danger(objOrErr: unknown, content?: string | string[]): Promise<void> {
-    this.pino.error(new Log(objOrErr, content));
+    // this.pino.error(new Log(objOrErr, content));
   }
 }

@@ -22,6 +22,8 @@ export class FilmTypeormEntityMapper implements IEntityMapper<Film, FilmTypeormE
 
     if (model.company)
       entity.company = companyMapper.toEntity(model.company);
+    if (model.companyUuid)
+      entity.companyUuid = model.companyUuid;
     if (model.actors)
       entity.actors = model.actors.map(actor => actorMapper.toEntity(actor));
     if (model.reports)
@@ -44,6 +46,8 @@ export class FilmTypeormEntityMapper implements IEntityMapper<Film, FilmTypeormE
 
     if (entity.company)
       model.company = companyMapper.toModel(entity.company);
+    if (entity.companyUuid)
+      model.companyUuid = entity.companyUuid;
     if (entity.actors)
       model.actors = entity.actors.map(a => actorMapper.toModel(a));
     if (entity.reports)

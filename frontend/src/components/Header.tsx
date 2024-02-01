@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import {registerAction, registerCloseAction, registerOpenAction} from "../store/actions";
 import {IDispatch, IRootState} from "../store";
 import {IDispatchProps} from "./common";
+import { Link } from "react-router-dom";
 
 interface IHeaderStateProps {
   msg: string,
@@ -46,7 +47,7 @@ function Header({
     <div className="header">
       <div className="container">
         <div className="header__wrap">
-            <div className="header__logo"><a href="/">fucinema</a></div>
+            <div className="header__logo"><Link to="/">fucinema</Link></div>
             <Button
               onClick={() => presenter(registerOpenAction())}
               variant="contained"

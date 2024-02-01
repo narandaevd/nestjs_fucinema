@@ -19,6 +19,8 @@ export class CompanyTypeormEntity {
   })
   title: string;
 
-  @OneToMany(() => FilmTypeormEntity, f => f.company)
+  @OneToMany(() => FilmTypeormEntity, f => f.company, {
+    onDelete: 'CASCADE',
+  })
   film?: FilmTypeormEntity;
 }

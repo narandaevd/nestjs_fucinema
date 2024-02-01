@@ -14,4 +14,5 @@ export class Film {
   company?: Company;
   actors?: Actor[];
   reports?: Report[];
+  companyUuid?: string;
 }

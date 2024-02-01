@@ -67,6 +67,7 @@ export class UserModule {
       ],
       exports: [
         AuthService,
+        USER_CONFIGURATION_TOKEN,
       ]
     }
   }

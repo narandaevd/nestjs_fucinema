@@ -14,6 +14,9 @@ export function Container(): React.ReactElement {
           <Route path="/films/:uuid" element={
             <FilmMainPage />
           }/>
+          <Route path="*" element={
+            <h1>Not found</h1>
+          }/>
         </Routes>
       </div>
     </div>

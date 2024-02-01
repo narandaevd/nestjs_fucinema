@@ -2,7 +2,8 @@ import {
   Film,
   UpdateFilmDto,
   AuthResultCode,
-  IProfanityChecker
+  IProfanityChecker,
+  User
 } from '../../../../domain';
 import {
   IFilmRepository,
@@ -42,15 +43,26 @@ export class FilmService {
     private readonly errorService: IErrorService,
   ) {}
 
-  public async getMany(skip?: number, take?: number): Promise<IFilmPagination> {
+  public async getMany(
+    skip?: number, 
+    take?: number,
+    title?: string,
+    description?: string,
+  ): Promise<IFilmPagination> {
     const {defaultSkip, defaultTake} = this.filmConfiguration.getConfig();
     if (!skip)
       skip = defaultSkip;
     if (!take)
       take = defaultTake;
+
     await this.logService.debug({skip: skip, take: take}, 'Были запрошены фильмы');
     try {
-      return await this.filmRepository.findManyAndTotalCount(skip, take);
+      return await this.filmRepository.findManyAndTotalCount(
+        skip,
+        take,
+        title,
+        description,
+      );
     } catch (e: unknown) {
       await this.errorService.logAndThrowIfConnectionRefused(e);
       await this.errorService.logAndThrowIfUnknown(e);
@@ -128,5 +140,26 @@ export class FilmService {
       throw new NotFoundException(msg);
     }
     return updatedFilm;
+  }
+
+  public async create(
+    title: string,
+    description: string,
+    companyUuid: string,
+  ) {
+    const film = new Film(title);
+    if (description)
+      film.description = description;
+    if (companyUuid)
+      film.companyUuid = companyUuid;
+    return this.filmRepository.save(film);
+  }
+
+  public async addActorToFilm(filmUuid: string, actorUuid: string) {
+    return this.filmRepository.addActorToFilm(filmUuid, actorUuid);
+  }
+
+  public async delete(uuid: string) {
+    await this.filmRepository.delete(uuid);
   }
 }

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export class FilmData {
   uuid: string;
   title: string;
@@ -10,7 +12,7 @@ export function Film({
   title
 }: FilmData): React.ReactElement {
   return (
-    <a href={`/films/${uuid}`}>
+    <Link to={`/films/${uuid}`}>
       <div className="list__item">
         <div className="list__item__image">
           <img src="/img/no-image.jpg" alt="" />
@@ -22,6 +24,6 @@ export function Film({
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   )
 }
